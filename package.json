@@ -1,0 +1,23 @@
+{
+  "name": "@prb/price-data",
+  "description": "Price data for my personal projects",
+  "license": "MIT",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/PaulRBerg/price-data/issues"
+  },
+  "files": [
+    "crypto/",
+    "forex/"
+  ],
+  "homepage": "https://github.com/PaulRBerg/price-data#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaulRBerg/price-data.git"
+  }
+}
