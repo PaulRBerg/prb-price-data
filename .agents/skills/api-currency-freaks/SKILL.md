@@ -37,9 +37,6 @@ If the key is missing, halt and inform the user. Do not attempt to call the API 
 - `/rates/latest` — available on all plans (including free).
 - `/rates/historical` — **paid plans only**. If the user requests historical data
   and the API returns an auth/plan error, surface it verbatim instead of guessing.
-- `/timeseries` — **Professional plan and onwards only**. Batch historical rates
-  across a date range in a single call. Prefer this over iterating
-  `/rates/historical` day-by-day when the plan allows.
 
 ## Base URL
 
@@ -138,70 +135,6 @@ curl -s "https://api.currencyfreaks.com/v2.0/rates/historical?apikey=$CURRENCY_F
 - Rates are daily closing prices at 00:00 UTC.
 - CurrencyFreaks has data for most currencies since 1984-11-28.
 
-## Time Series (Batch Historical Rates)
-
-Use this to pull many days in **one** request instead of looping
-`/rates/historical`. It costs one API credit for the whole range, avoids
-per-day throttling, and guarantees all dates come from one coherent response.
-
-### Endpoint
-
-```
-GET /v2.0/timeseries
-```
-
-| Parameter   | Required | Value                                                    |
-| ----------- | -------- | -------------------------------------------------------- |
-| `apikey`    | Yes      | `$CURRENCY_FREAKS_API_KEY`                               |
-| `startDate` | Yes      | `YYYY-MM-DD` (UTC, inclusive)                            |
-| `endDate`   | Yes      | `YYYY-MM-DD` (UTC, inclusive)                            |
-| `symbols`   | No       | Comma-separated symbols (restrict to what you need)      |
-| `base`      | No       | Three-letter code; omit to use default USD               |
-
-### Example
-
-```bash
-curl -s "https://api.currencyfreaks.com/v2.0/timeseries?apikey=$CURRENCY_FREAKS_API_KEY&startDate=2025-02-01&endDate=2025-02-07&symbols=EUR,RON,GBP"
-```
-
-### Response Shape
-
-```json
-{
-  "startDate": "2025-02-01",
-  "endDate": "2025-02-07",
-  "base": "USD",
-  "historicalRatesList": [
-    { "date": "2025-02-01", "rates": { "EUR": "0.9612", "RON": "4.7823", "GBP": "0.8021" } },
-    { "date": "2025-02-02", "rates": { "EUR": "0.9608", "RON": "4.7811", "GBP": "0.8015" } },
-    ...
-  ]
-}
-```
-
-Each `historicalRatesList[i].rates` map follows the same "symbol per 1 base"
-semantics as `/rates/historical`, so the pair formulas in the table above apply
-unchanged — iterate over the list and compute per-date pairs.
-
-### When to use which endpoint
-
-| Use case                                  | Endpoint              |
-| ----------------------------------------- | --------------------- |
-| Single date                               | `/rates/historical`   |
-| Contiguous range of dates (backfill, TSV) | `/timeseries`         |
-| Sparse / non-contiguous dates             | `/rates/historical`   |
-| Plan is below Professional                | `/rates/historical`   |
-
-### Date Rules
-
-- Same UTC rules as `/rates/historical`: no future dates, use yesterday as the
-  latest valid `endDate`, 00:00 UTC closing prices, data back to 1984-11-28.
-- `startDate <= endDate`. If they're equal, the response still wraps a single
-  entry in `historicalRatesList` — handle it the same way.
-- The docs don't publish an explicit max range. If a large range errors or
-  truncates, chunk into shorter windows (e.g. 1-year chunks) rather than
-  falling back to per-day calls.
-
 ## Computing Pairs
 
 Given a response `r` with USD base:
@@ -266,10 +199,7 @@ id	output
 
 Free tier is tight. When iterating over a date range:
 
-- Prefer `/timeseries` to collapse the whole range into one request — it sidesteps
-  per-day throttling entirely. Only fall back to per-day `/rates/historical`
-  calls if the plan doesn't cover `/timeseries` or the dates are non-contiguous.
-- For per-day calls, sleep **500 ms** between requests.
+- Sleep **500 ms** between requests.
 - Retry on `429` and `5xx` with exponential backoff (1s, 2s, 4s; max 3 retries).
 - On `401`/`403`, stop immediately — it's a key or plan problem, not transient.
 

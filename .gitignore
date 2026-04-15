@@ -1,0 +1,6 @@
+# directories
+downloads/
+
+# files
+.env
+.env.local
