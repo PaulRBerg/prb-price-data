@@ -27,7 +27,8 @@ Static historical price data in TSV format. No build system, no code — this re
 
 - Preserve historical values — never overwrite past rows when appending new dates
 - When extending a year, append only; re-sort only if insertion is required
-- Verify row count matches elapsed days before committing (weekends included for forex via CurrencyFreaks)
+- For full-year backfills (current and recent years), verify row count matches elapsed days before committing (weekends included for forex via CurrencyFreaks)
+- Sparse year files are acceptable for older dates fetched on demand — only the dates explicitly needed are required, full-year completeness is not enforced
 - Cross-check a handful of dates against the upstream source before committing bulk updates
 
 ## Sources
