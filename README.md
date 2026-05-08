@@ -42,9 +42,11 @@ Year files for older dates may be sparse — only the dates that have been expli
 
 - `crypto/BTC_USD_2017.tsv`
 - `crypto/BTC_USD_2018.tsv`
+- `crypto/BTC_USD_2019.tsv`
 - `crypto/BTC_USD_2026.tsv`
 - `crypto/ETH_USD_2017.tsv`
 - `crypto/ETH_USD_2018.tsv`
+- `crypto/ETH_USD_2019.tsv`
 
 ## Sources
 
