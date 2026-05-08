@@ -23,12 +23,15 @@ Year files for older dates may be sparse — only the dates that have been expli
 - `forex/EUR_RON_2025.tsv`
 - `forex/EUR_USD_2017.tsv`
 - `forex/EUR_USD_2018.tsv`
+- `forex/EUR_USD_2019.tsv`
 - `forex/EUR_USD_2022.tsv`
 - `forex/EUR_USD_2023.tsv`
 - `forex/EUR_USD_2024.tsv`
 - `forex/EUR_USD_2025.tsv`
+- `forex/GBP_USD_2019.tsv`
 - `forex/USD_RON_2017.tsv`
 - `forex/USD_RON_2018.tsv`
+- `forex/USD_RON_2019.tsv`
 - `forex/USD_RON_2022.tsv`
 - `forex/USD_RON_2023.tsv`
 - `forex/USD_RON_2024.tsv`
