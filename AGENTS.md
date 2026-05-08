@@ -5,7 +5,10 @@ Static historical price data in TSV format. No build system, no code — this re
 ## Layout
 
 - `forex/<BASE>_<QUOTE>_<YEAR>.tsv` — one file per currency pair per year
+- `crypto/<BASE>_<QUOTE>_<YEAR>.tsv` — one file per crypto pair per year
+- `downloads/` — gitignored scratch directory for raw upstream payloads pulled by the data skills
 - `.env.example` — documents required API keys (`COINGECKO_API_KEY`, `CURRENCY_FREAKS_API_KEY`)
+- `package.json` — package metadata only (no scripts, no dependencies)
 - `README.md` — public-facing dataset description
 
 ## File Format
@@ -19,8 +22,8 @@ Static historical price data in TSV format. No build system, no code — this re
 
 ## Naming
 
-- Filenames use **uppercase ISO 4217 codes** separated by underscores: `EUR_USD_2025.tsv`
-- Directory names are lowercase and describe the asset class (`forex/`, future: `crypto/`, `stocks/`)
+- Filenames use **uppercase ISO 4217 codes** (or ticker symbols for crypto) separated by underscores: `EUR_USD_2025.tsv`, `BTC_USD_2026.tsv`
+- Directory names are lowercase and describe the asset class (`forex/`, `crypto/`, future: `stocks/`)
 - One year per file; do not merge multi-year ranges
 
 ## Data Integrity
@@ -34,6 +37,24 @@ Static historical price data in TSV format. No build system, no code — this re
 ## Sources
 
 - **Forex**: [CurrencyFreaks](https://currencyfreaks.com) — use the `api-currency-freaks` skill to pull rates
-- **Crypto** [CoinGecko](https://coingecko.com/) — use the `coingecko-api` skill
+- **Crypto**: [CoinGecko](https://coingecko.com/) — use the `coingecko-api` skill
+
+## Workflow
+
+Adding or extending a dataset:
+
+1. Load the relevant API key from `.env` (`CURRENCY_FREAKS_API_KEY` for forex, `COINGECKO_API_KEY` for crypto).
+2. Invoke the matching skill (`api-currency-freaks` or `coingecko-api`) to fetch the date range you need.
+3. Land raw responses in `downloads/` (gitignored) if intermediate caching helps.
+4. Append rows to `<asset>/<BASE>_<QUOTE>_<YEAR>.tsv`, respecting the format and integrity rules above.
+5. Spot-check a few dates against the upstream source.
+6. Update the dataset list in `README.md` if you added a new file.
+
+## Contribution Workflow
+
+- Default branch: `main`
+- Branch directly from `main` for changes; small data updates can land as direct commits, larger restructurings via PR
+- Commit messages are conventional-commit style (`feat:`, `fix:`, `chore:`, `docs:`)
+- Never edit historical rows — corrections to past values must be justified in the commit message
 
 @README.md

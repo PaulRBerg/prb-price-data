@@ -1,17 +1,10 @@
 # prb-price-data
 
-Historical price data in TSV format.
+Historical price data in TSV format — forex and crypto closing rates organised by pair and year, for use in personal projects.
 
 ## Layout
 
-```
-forex/
-  <BASE>_<QUOTE>_<YEAR>.tsv
-crypto/
-  <BASE>_<QUOTE>_<YEAR>.tsv
-```
-
-Each file has two tab-separated columns:
+Files live under `forex/` and `crypto/`, named `<BASE>_<QUOTE>_<YEAR>.tsv` with uppercase ISO 4217 / ticker codes. Each file has two tab-separated columns:
 
 | Column | Description                      |
 | ------ | -------------------------------- |
@@ -54,3 +47,15 @@ Year files for older dates may be sparse — only the dates that have been expli
 
 - Forex rates from [CurrencyFreaks](https://currencyfreaks.com)
 - Crypto prices from [CoinGecko](https://coingecko.com)
+
+## Links
+
+- [Issues](https://github.com/PaulRBerg/prb-price-data/issues)
+
+## Contributing
+
+Contributions are welcome. See [`AGENTS.md`](AGENTS.md) for the dataset conventions, file format rules, and data-integrity guarantees.
+
+## License
+
+MIT — declared in `package.json`.
