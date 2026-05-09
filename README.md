@@ -28,7 +28,7 @@ Year files for older dates may be sparse — only the dates that have been expli
 
 | Pair    | Years available     |
 | ------- | ------------------- |
-| BTC/USD | 2017–2019, 2026     |
+| BTC/USD | 2017–2026           |
 | ETH/USD | 2017–2025           |
 
 ## Sources
