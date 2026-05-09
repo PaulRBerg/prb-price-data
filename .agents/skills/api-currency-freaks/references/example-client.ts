@@ -4,7 +4,8 @@
  * Generic over symbols — callers pass the symbols they need and the pairs they
  * want derived. Loads CURRENCY_FREAKS_API_KEY from the repo-root .env (via
  * dotenv or a process manager that injects it). Retries on 429/5xx with
- * exponential backoff and throttles at 500ms between historical calls.
+ * exponential backoff. Per-day historical calls run with bounded concurrency
+ * and a small inter-launch delay.
  *
  * Adapted from ~/sablier/price-data/src/cli/fetch-forex/currencyfreaks-client.ts.
  */
@@ -13,7 +14,8 @@ import axios from "axios";
 import axiosRetry from "axios-retry";
 
 const BASE_URL = "https://api.currencyfreaks.com/v2.0";
-const REQUEST_DELAY_MS = 500;
+const REQUEST_DELAY_MS = 75;
+const CONCURRENCY = 4;
 const MAX_RETRIES = 3;
 const RETRY_BASE_MS = 1000;
 
@@ -161,24 +163,35 @@ export async function fetchTimeseries(
  * Iterate a date range inclusively via per-day /rates/historical calls.
  *
  * Fallback for plans without /timeseries access or for sparse date sets.
- * Throttles between requests.
+ * Runs up to CONCURRENCY requests in parallel with a small inter-launch delay
+ * to spread load. Results are returned in chronological order.
  */
 export async function fetchHistoricalRange(
   startDate: string,
   endDate: string,
   pairs: Pair[],
 ): Promise<PairQuotes[]> {
-  const out: PairQuotes[] = [];
   const start = new Date(`${startDate}T00:00:00Z`).getTime();
   const end = new Date(`${endDate}T00:00:00Z`).getTime();
   const day = 24 * 60 * 60 * 1000;
 
+  const dates: string[] = [];
   for (let t = start; t <= end; t += day) {
-    const date = new Date(t).toISOString().slice(0, 10);
-    const quotes = await fetchHistorical(date, pairs);
-    if (quotes) out.push(quotes);
-    if (t + day <= end) await sleep(REQUEST_DELAY_MS);
+    dates.push(new Date(t).toISOString().slice(0, 10));
   }
 
-  return out;
+  const results: Array<PairQuotes | null> = new Array(dates.length).fill(null);
+  let cursor = 0;
+
+  async function worker(): Promise<void> {
+    while (true) {
+      const i = cursor++;
+      if (i >= dates.length) return;
+      results[i] = await fetchHistorical(dates[i], pairs);
+      if (cursor < dates.length) await sleep(REQUEST_DELAY_MS);
+    }
+  }
+
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+  return results.filter((r): r is PairQuotes => r !== null);
 }

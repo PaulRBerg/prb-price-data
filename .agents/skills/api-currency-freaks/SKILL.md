@@ -197,11 +197,17 @@ id	output
 
 ## Rate Limiting & Retries
 
-Free tier is tight. When iterating over a date range:
+CurrencyFreaks documents only a monthly quota — no documented per-second cap.
+When iterating over a date range:
 
-- Sleep **500 ms** between requests.
+- Run up to **4 requests in parallel**.
+- Sleep **~75 ms** between launching successive requests within a worker.
 - Retry on `429` and `5xx` with exponential backoff (1s, 2s, 4s; max 3 retries).
+- If `429`s appear, halve the concurrency and double the delay before retrying.
 - On `401`/`403`, stop immediately — it's a key or plan problem, not transient.
+
+For Professional+ plans, prefer `/timeseries` over per-day calls — one request
+covers an entire date range and avoids the concurrency tradeoff entirely.
 
 ## Error Handling
 
