@@ -20,7 +20,7 @@ Year files for older dates may be sparse — only the dates that have been expli
 | Pair    | Years available     |
 | ------- | ------------------- |
 | EUR/RON | 2022–2025           |
-| EUR/USD | 2017–2019, 2022–2025 |
+| EUR/USD | 2017–2025           |
 | GBP/USD | 2019–2021           |
 | USD/RON | 2017–2020, 2022–2026 |
 
