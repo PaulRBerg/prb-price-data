@@ -37,14 +37,14 @@ Static historical price data in TSV format. No build system, no code — this re
 ## Sources
 
 - **Forex**: [CurrencyFreaks](https://currencyfreaks.com) — use the `api-currency-freaks` skill to pull rates
-- **Crypto**: [CoinGecko](https://coingecko.com/) — use the `coingecko-api` skill
+- **Crypto**: [CoinGecko](https://coingecko.com/) — use the `coingecko-cli` skill
 
 ## Workflow
 
 Adding or extending a dataset:
 
 1. Load the relevant API key from `.env` (`CURRENCY_FREAKS_API_KEY` for forex, `COINGECKO_API_KEY` for crypto).
-2. Invoke the matching skill (`api-currency-freaks` or `coingecko-api`) to fetch the date range you need.
+2. Invoke the matching skill (`api-currency-freaks` or `coingecko-cli`) to fetch the date range you need.
 3. Land raw responses in `downloads/` (gitignored) if intermediate caching helps.
 4. Append rows to `<asset>/<BASE>_<QUOTE>_<YEAR>.tsv`, respecting the format and integrity rules above.
 5. Spot-check a few dates against the upstream source.
